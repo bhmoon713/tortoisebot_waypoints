@@ -1,0 +1,24 @@
+<launch>
+  <!-- Params so graders can flip pass/fail by editing these -->
+  <param name="goal_x" value="1.0" />
+  <param name="goal_y" value="0.0" />
+  <param name="goal_yaw_deg" value="0.0" />
+
+  <!-- Expected final pose (tune to PASS initially, change to make FAIL) -->
+  <param name="expected_x" value="1.0" />
+  <param name="expected_y" value="0.0" />
+  <param name="expected_yaw_deg" value="0.0" />
+
+  <!-- Tolerances -->
+  <param name="pos_tol" value="0.15" />        <!-- meters -->
+  <param name="yaw_tol_deg" value="10.0" />    <!-- degrees -->
+
+  <!-- Timeouts -->
+  <param name="action_timeout" value="60.0" /> <!-- seconds -->
+  <param name="settle_time" value="1.0" />     <!-- seconds to wait after success -->
+
+  <test pkg="tortoisebot_waypoints"
+        type="test_waypoints.py"
+        test-name="waypoints_tests"
+        time-limit="120"/>
+</launch>
