@@ -48,8 +48,8 @@ class TestWaypoints(unittest.TestCase):
     def test_final_position(self):
         self.assertTrue(self._wait_for_odom(), "No /odom received")
 
-        goal_x = rospy.get_param('~goal_x', 1.0)
-        goal_y = rospy.get_param('~goal_y', 0.0)
+        goal_x = rospy.get_param('~goal_x', -0.2)
+        goal_y = rospy.get_param('~goal_y', -0.2)
         action_timeout = rospy.get_param('~action_timeout', 60.0)
         settle_time = rospy.get_param('~settle_time', 1.0)
         pos_tol = rospy.get_param('~pos_tol', 0.15)
@@ -73,33 +73,49 @@ class TestWaypoints(unittest.TestCase):
         rospy.loginfo(f"[TEST] final pos=({self.odom.x:.3f},{self.odom.y:.3f}), expected=({exp_x:.3f},{exp_y:.3f}), err={dist:.3f}")
         self.assertLessEqual(dist, pos_tol, f"Position error {dist:.3f} > tol {pos_tol:.3f}")
 
-    def test_final_yaw(self):
+    def _snapshot_pose(self):
+        # wait until we have a pose
         self.assertTrue(self._wait_for_odom(), "No /odom received")
+        return (self.odom.x, self.odom.y, self.odom.yaw)
 
-        goal_x = rospy.get_param('~goal_x', 1.0)
-        goal_y = rospy.get_param('~goal_y', 0.0)
+    def test_final_yaw(self):
+        # --- params ---
+        goal_x = rospy.get_param('~goal_x', -0.2)
+        goal_y = rospy.get_param('~goal_y', -0.2)
         action_timeout = rospy.get_param('~action_timeout', 60.0)
         settle_time = rospy.get_param('~settle_time', 1.0)
         yaw_tol_deg = rospy.get_param('~yaw_tol_deg', 10.0)
 
+        # Optional override: if you want a specific final heading
+        expected_yaw_deg_param = rospy.get_param('~expected_yaw_deg', None)
+
+        # 1) Snapshot start pose BEFORE sending the goal
+        start_x, start_y, _ = self._snapshot_pose()
+
+        # 2) Send goal and wait
         goal = WaypointActionGoal()
         goal.position = Point(goal_x, goal_y, 0.0)
         self.client.send_goal(goal)
         self.assertTrue(self.client.wait_for_result(rospy.Duration(action_timeout)), "Action timed out")
-
         rospy.sleep(settle_time)
 
-        exp_yaw_deg = rospy.get_param('~expected_yaw_deg', rospy.get_param('~goal_yaw_deg', 0.0))
-        exp_yaw = math.radians(exp_yaw_deg)
-        dy = (goal_y - self.odom.y)
-        dx = (goal_x - self.odom.x)
-        # If you want "face-to-goal" final orientation, compute desired yaw from last step:
-        # desired_yaw = math.atan2(dy, dx)
-        # Here we just compare to expected param for grading flexibility.
-        err = abs(normalize_angle(self.odom.yaw - exp_yaw))
+        # 3) Compute expected yaw
+        if expected_yaw_deg_param is not None:
+            expected_yaw = math.radians(expected_yaw_deg_param)
+            source = "param"
+        else:
+            # face from START -> GOAL (stable even after arrival)
+            expected_yaw = math.atan2(goal_y - start_y, goal_x - start_x)
+            source = "start->goal"
+
+        # 4) Compare final yaw to expected
+        err = abs(normalize_angle(self.odom.yaw - expected_yaw))
         err_deg = math.degrees(err)
-        rospy.loginfo(f"[TEST] final yaw={math.degrees(self.odom.yaw):.1f} deg, expected={exp_yaw_deg:.1f} deg, err={err_deg:.1f} deg")
+        rospy.loginfo(f"[TEST] yaw_final={math.degrees(self.odom.yaw):.1f} deg, "
+                    f"yaw_expected({source})={math.degrees(expected_yaw):.1f} deg, "
+                    f"err={err_deg:.1f} deg (tol={yaw_tol_deg:.1f})")
         self.assertLessEqual(err_deg, yaw_tol_deg, f"Yaw error {err_deg:.1f} > tol {yaw_tol_deg:.1f}")
+
 
 if __name__ == '__main__':
     rostest.rosrun('tortoisebot_waypoints', 'waypoints_tests', TestWaypoints)

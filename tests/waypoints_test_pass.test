@@ -1,0 +1,16 @@
+<launch>
+  <test pkg="tortoisebot_waypoints"
+        type="test_waypoints.py"
+        test-name="waypoints_tests_pass"
+        time-limit="120">
+    <!-- private params (match defaults for PASS) -->
+    <param name="goal_x" value="-0.2"/>
+    <param name="goal_y" value="-0.2"/>
+    <param name="expected_x" value="-0.2"/>
+    <param name="expected_y" value="-0.2"/>
+    <param name="pos_tol" value="0.10"/>
+    <param name="yaw_tol_deg" value="10.0"/>
+    <param name="action_timeout" value="60.0"/>
+    <param name="settle_time" value="1.0"/>
+  </test>
+</launch>

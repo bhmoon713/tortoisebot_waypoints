@@ -1,21 +1,31 @@
 <launch>
-  <!-- Params so graders can flip pass/fail by editing these -->
-  <param name="goal_x" value="1.0" />
-  <param name="goal_y" value="0.0" />
-  <param name="goal_yaw_deg" value="0.0" />
+  <!-- Goal to (-0.2, -0.2) : This is prone to pass-->
+  <!-- <param name="goal_x" value="-0.2" />
+  <param name="goal_y" value="-0.2" />
+  <param name="expected_x" value="-0.2" />
+  <param name="expected_y" value="-0.2" /> -->
 
-  <!-- Expected final pose (tune to PASS initially, change to make FAIL) -->
-  <param name="expected_x" value="1.0" />
-  <param name="expected_y" value="0.0" />
-  <param name="expected_yaw_deg" value="0.0" />
+  <!-- Reasonable tolerances -->
+  <!-- <param name="pos_tol" value="0.10" />
+  <param name="yaw_tol_deg" value="10.0" />
 
-  <!-- Tolerances -->
-  <param name="pos_tol" value="0.15" />        <!-- meters -->
-  <param name="yaw_tol_deg" value="10.0" />    <!-- degrees -->
+  <param name="action_timeout" value="60.0" />
+  <param name="settle_time" value="1.0" /> -->
 
-  <!-- Timeouts -->
-  <param name="action_timeout" value="60.0" /> <!-- seconds -->
-  <param name="settle_time" value="1.0" />     <!-- seconds to wait after success -->
+
+
+  <!-- Goal same, but expected is intentionally wrong -->
+  <param name="goal_x" value="-0.2" />
+  <param name="goal_y" value="-0.2" />
+  <param name="expected_x" value="-0.40" />
+  <param name="expected_y" value="-0.20" />
+
+  <param name="pos_tol" value="0.10" />
+  <param name="yaw_tol_deg" value="10.0" />
+
+  <param name="action_timeout" value="60.0" />
+  <param name="settle_time" value="1.0" />
+
 
   <test pkg="tortoisebot_waypoints"
         type="test_waypoints.py"
