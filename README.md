@@ -15,6 +15,7 @@ cd ~/simulation_ws && catkin_make && source devel/setup.bash
 rosrun tortoisebot_waypoints tortoisebot_action_server.py
 ```
 
+Test code is to move robot to -0.2, -0,2 
 ## Run test(Terminal 3) : Pass
 ```bash
 source /opt/ros/noetic/setup.bash
