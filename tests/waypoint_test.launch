@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- To run the test use: rostest move_and_turn test_move_and_turn.launch  -->
+
+<launch>
+  <!-- Start a Gazebo empty world in headless mode and spawn a Turtlebot 3 robot -->
+  <include file="$(tortoisebot_gazebo/launch/tortoisebot_playground_headless.launch"/>
+
+  <!-- Start the move_and_turn node -->
+  <node name="tortoisebot_waypoints_node" pkg="tortoisebot_waypoints" type="tortoisebot_action_server.py" output="screen"/>
+
+  <!-- Start the move_and_turn test -->
+  <test test-name="waypoints_test" pkg="tortoisebot_waypoints" type="waypoints_test.test"/>
+</launch>
