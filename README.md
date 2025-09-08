@@ -28,7 +28,7 @@ source /opt/ros/noetic/setup.bash
 cd ~/simulation_ws && catkin_make && source devel/setup.bash
 rostest tortoisebot_waypoints waypoints_test_fail.test --reuse-master
 ```
-## or you can play with any number numbers (Terminal 3)
+## or you can play with any numbers within the code "waypoints_test.test" (Terminal 3)
 ```bash
 rostest tortoisebot_waypoints waypoints_test.test --reuse-master
 ```
